@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>OpsAgent — Always Healthy 🚀</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,900;1,700&family=Syne:wght@700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --green: #00c566;
+      --yellow: #ffd74a;
+      --teal: #00bfa5;
+      --purple: #7c3aed;
+      --coral: #ff5252;
+      --blue: #2563eb;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --card: #ffffff;
+      --bg: #f9fafb;
+    }
+
+    body {
+      background: #fff;
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+    }
+
+    /* ═══ ILLUSTRATED BACKGROUND SHAPES ═══ */
+    #scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Individual floating blob characters */
+    .bc {
+      position: absolute;
+      animation: floatY 7s ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(var(--r, 0deg))
+      }
+
+      50% {
+        transform: translateY(-16px) rotate(var(--r, 0deg))
+      }
+    }
+
+    /* Abstract shapes (non-face) */
+    .shape {
+      position: absolute;
+      animation: floatY 9s ease-in-out infinite;
+    }
+
+    /* ═══ NAVBAR ═══ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.5px;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .live-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(0, 197, 102, 0.1);
+      border: 1.5px solid rgba(0, 197, 102, 0.25);
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pdot 1.6s infinite;
+    }
+
+    @keyframes pdot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .3;
+        transform: scale(1.5)
+      }
+    }
+
+    /* ═══ HERO ═══ */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 28px 70px;
+      text-align: center;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    /* wavy underline on keyword */
+    .u-green {
+      display: inline-block;
+      position: relative;
+      background: linear-gradient(135deg, #00c566, #00bfa5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .u-green::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 5px;
+      background: linear-gradient(90deg, #00c566, #00bfa5);
+      border-radius: 99px;
+    }
+
+    .u-black {
+      display: inline-block;
+      position: relative;
+      text-decoration: underline;
+      text-decoration-color: var(--yellow);
+      text-decoration-thickness: 5px;
+      text-underline-offset: 4px;
+    }
+
+    h1.hero-h {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      line-height: 1.04;
+      letter-spacing: -2px;
+      color: var(--ink);
+      position: relative;
+      z-index: 2;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+      font-size: .71rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      position: relative;
+      z-index: 2;
+    }
+
+    .edot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      animation: pdot 1.6s infinite;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 440px;
+      margin: 0 auto 50px;
+      line-height: 1.72;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ═══ STAT CARDS ═══ */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px 18px;
+      text-align: left;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .stat-lbl {
+      font-size: .67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-sub {
+      font-size: .71rem;
+      font-weight: 600;
+    }
+
+    /* ═══ SECTION ═══ */
+    .section {
+      padding: 0 36px 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.4px;
+    }
+
+    .pill-count {
+      font-size: .71rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #9ca3af;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* ═══ HEALTH CARD ═══ */
+    .hcard {
+      border-radius: 20px;
+      padding: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 36px;
+      align-items: center;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .donut-wrap {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .donut-lbl {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .hcard-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .hcard-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .hcard-desc {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mini-cell {
+      border-radius: 12px;
+      padding: 13px;
+      text-align: center;
+    }
+
+    .mini-lbl {
+      font-size: .62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .mini-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .warn {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-radius: 10px;
+      font-size: .79rem;
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    /* ═══ POD GRID ═══ */
+    .pod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: 12px;
+    }
+
+    .pod-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+      transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .pod-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .pod-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pod-name {
+      font-weight: 700;
+      font-size: .86rem;
+      color: var(--ink);
+      line-height: 1.35;
+      word-break: break-all;
+      flex: 1;
+      margin-right: 8px;
+    }
+
+    .status-pill {
+      font-size: .66rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      border: 1.5px solid;
+    }
+
+    .ns-tag {
+      display: inline-block;
+      font-size: .66rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      border: 1.5px solid;
+    }
+
+    .pod-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pod-foot-lbl {
+      font-size: .69rem;
+      color: #9ca3af;
+    }
+
+    .pod-foot-val {
+      font-size: .77rem;
+      font-weight: 800;
+    }
+
+    /* ═══ AI CARD ═══ */
+    .ai-card {
+      border-radius: 20px;
+      padding: 32px;
+      background: #fff;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .ai-card::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 22px;
+      z-index: -1;
+      background: linear-gradient(135deg, var(--green), var(--teal), var(--purple));
+      padding: 2px;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: xor;
+      -webkit-mask-composite: xor;
+    }
+
+    .ai-head {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 22px;
+    }
+
+    .ai-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #7c3aed, #2dd4bf);
+    }
+
+    .ai-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .ai-sub {
+      font-size: .73rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .ai-ts {
+      margin-left: auto;
+      font-family: monospace;
+      font-size: .7rem;
+      color: #9ca3af;
+    }
+
+    .terminal {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px 20px;
+      border: 1.5px solid #e2e8f0;
+      min-height: 62px;
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: .82rem;
+      color: #374151;
+      line-height: 1.7;
+    }
+
+    .tcursor {
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      background: var(--green);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink .9s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    .sub-lbl {
+      font-size: .63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #9ca3af;
+      margin-bottom: 9px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .tag {
+      font-size: .71rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1.5px solid;
+    }
+
+    .recs {
+      list-style: none;
+      margin-top: 2px;
+    }
+
+    .recs li {
+      font-size: .81rem;
+      color: var(--muted);
+      padding: 4px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+    }
+
+    .recs li::before {
+      content: '→';
+      color: var(--teal);
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ═══ HEAL ═══ */
+    .heal-area {
+      display: flex;
+      justify-content: center;
+      padding: 12px 32px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .heal-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 18px 46px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      background: var(--green);
+      color: #fff;
+      letter-spacing: -.2px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s;
+      box-shadow: 0 8px 30px rgba(0, 197, 102, 0.35);
+      animation: gbtn 2.8s ease-in-out infinite;
+    }
+
+    .heal-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .heal-btn:active {
+      transform: scale(0.97);
+    }
+
+    .heal-btn:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    @keyframes gbtn {
+
+      0%,
+      100% {
+        box-shadow: 0 6px 28px rgba(0, 197, 102, 0.35)
+      }
+
+      50% {
+        box-shadow: 0 10px 40px rgba(0, 197, 102, 0.55)
+      }
+    }
+
+    /* ═══ TOAST ═══ */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 18px;
+      background: #fff;
+      border-radius: 14px;
+      max-width: 370px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: tin .3s cubic-bezier(.34, 1.56, .64, 1), tout .4s ease-in 2.8s forwards;
+    }
+
+    @keyframes tin {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(.9)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes tout {
+      to {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+    }
+
+    .toast-icon {
+      width: 31px;
+      height: 31px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .toast-msg {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .tx {
+      margin-left: auto;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 2px;
+    }
+
+    .tx:hover {
+      color: var(--ink);
+    }
+
+    /* ═══ SKELETON ═══ */
+    .sk {
+      background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+      background-size: 200%;
+      border-radius: 8px;
+      animation: sk 1.4s infinite;
+    }
+
+    @keyframes sk {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
+    /* ═══ FOOTER ═══ */
+    .footer {
+      text-align: center;
+      padding-bottom: 48px;
+      font-size: .72rem;
+      color: #d1d5db;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Illustrated blob scene -->
+  <div id="scene">
+
+    <!-- Big teal blob top-left (like Devfolio's green half-face) -->
+    <div class="bc" style="top:8%;left:3%;--r:-12deg;animation-delay:0s;animation-duration:8s">
+      <svg width="130" height="110" viewBox="0 0 130 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 55 Q5 22 38 10 Q70 -2 98 18 Q128 36 118 68 Q108 98 72 104 Q36 110 18 84 Q8 70 10 55Z"
+          fill="#00bfa5" />
+        <circle cx="46" cy="48" r="7" fill="#005045" />
+        <circle cx="80" cy="44" r="7" fill="#005045" />
+        <path d="M42 68 Q65 84 88 68" stroke="#005045" stroke-width="4" stroke-linecap="round" fill="none" />
+        <ellipse cx="36" cy="65" rx="9" ry="6" fill="#009980" opacity="0.45" />
+        <ellipse cx="92" cy="62" rx="9" ry="6" fill="#009980" opacity="0.45" />
+      </svg>
+    </div>
+
+    <!-- Yellow sunburst top-right -->
+    <div class="bc" style="top:7%;right:5%;--r:10deg;animation-delay:1.5s;animation-duration:7s">
+      <svg width="110" height="110" viewBox="0 0 110 110" fill="none">
+        <path
+          d="M55 6 L61 34 L84 18 L70 44 L99 48 L74 62 L89 88 L62 74 L55 104 L48 74 L21 88 L36 62 L11 48 L40 44 L26 18 L49 34Z"
+          fill="#ffd74a" />
+        <circle cx="55" cy="55" r="22" fill="#f59e0b" />
+        <circle cx="48" cy="50" r="4" fill="#78350f" />
+        <circle cx="62" cy="50" r="4" fill="#78350f" />
+        <path d="M47 63 Q55 70 63 63" stroke="#78350f" stroke-width="2.5" stroke-linecap="round" fill="none" />
+      </svg>
+    </div>
+
+    <!-- Purple sleepy blob top-center -->
+    <div class="bc" style="top:6%;left:36%;--r:6deg;animation-delay:0.7s;animation-duration:9s">
+      <svg width="100" height="82" viewBox="0 0 100 82" fill="none">
+        <path d="M6 26 Q6 6 50 6 Q94 6 94 26 Q94 56 78 68 Q66 78 50 78 Q34 78 22 68 Q6 56 6 26Z" fill="#c084fc" />
+        <path d="M30 33 Q38 27 46 33" stroke="#3b0764" stroke-width="3.5" stroke-linecap="round" fill="none" />
+        <path d="M54 31 Q62 25 70 31" stroke="#3b0764" stroke-width="3.5" stroke-linecap="round" fill="none" />
+        <path d="M36 52 Q50 62 64 52" stroke="#3b0764" stroke-width="3" stroke-linecap="round" fill="none" />
+      </svg>
+    </div>
+
+    <!-- Green winking blob bottom-left -->
+    <div class="bc" style="bottom:18%;left:3%;--r:-8deg;animation-delay:2s;animation-duration:7.5s">
+      <svg width="100" height="95" viewBox="0 0 100 95" fill="none">
+        <path d="M12 48 Q8 16 44 6 Q76 -2 92 22 Q108 48 90 70 Q72 92 42 90 Q12 88 10 66 Q8 56 12 48Z" fill="#00c566" />
+        <path d="M30 42 Q38 36 46 42" stroke="#064e2b" stroke-width="3.5" stroke-linecap="round" fill="none" />
+        <circle cx="64" cy="40" r="6.5" fill="#064e2b" />
+        <path d="M34 60 Q50 72 66 60" stroke="#064e2b" stroke-width="3" stroke-linecap="round" fill="none" />
+      </svg>
+    </div>
+
+    <!-- Coral round blob bottom-right -->
+    <div class="bc" style="bottom:14%;right:4%;--r:5deg;animation-delay:3s;animation-duration:8.5s">
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
+        <circle cx="45" cy="45" r="42" fill="#ff7b7b" />
+        <circle cx="34" cy="38" r="6" fill="#7f1d1d" />
+        <circle cx="56" cy="38" r="6" fill="#7f1d1d" />
+        <path d="M30 56 Q45 68 60 56" stroke="#7f1d1d" stroke-width="3.5" stroke-linecap="round" fill="none" />
+        <path d="M72 16 L74 9 L76 16 L83 18 L76 20 L74 27 L72 20 L65 18Z" fill="#fff" opacity="0.7" />
+      </svg>
+    </div>
+
+    <!-- Abstract shapes -->
+    <!-- Blue triangle -->
+    <div class="shape" style="top:42%;right:7%;animation-delay:4s;animation-duration:10s">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <path d="M24 4 L44 42 L4 42Z" fill="#2563eb" opacity="0.6" />
+      </svg>
+    </div>
+    <!-- Yellow pill -->
+    <div class="shape" style="top:55%;left:6%;animation-delay:1s;animation-duration:12s">
+      <svg width="58" height="28" viewBox="0 0 58 28" fill="none">
+        <rect x="1" y="1" width="56" height="26" rx="13" fill="#ffd74a" opacity="0.55" />
+      </svg>
+    </div>
+    <!-- Green circle ring -->
+    <div class="shape" style="top:28%;right:12%;animation-delay:2s;animation-duration:11s">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="19" stroke="#00c566" stroke-width="5" fill="none" opacity="0.5" />
+      </svg>
+    </div>
+    <!-- Purple asterisk -->
+    <div class="shape" style="bottom:42%;left:8%;animation-delay:3.5s;animation-duration:9s">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <path d="M18 3 L18 33 M3 18 L33 18 M7 7 L29 29 M29 7 L7 29" stroke="#7c3aed" stroke-width="3.5"
+          stroke-linecap="round" opacity="0.45" />
+      </svg>
+    </div>
+    <!-- Squiggle line top center-right -->
+    <div class="shape" style="top:18%;left:18%;animation-delay:5s;animation-duration:13s">
+      <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
+        <path d="M4 15 Q14 4 24 15 Q34 26 44 15 Q54 4 60 15" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"
+          fill="none" opacity="0.5" />
+      </svg>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+    const API = 'http://localhost:8000';
+
+    function useFetch(url, ms = 30000) {
+      const [data, setData] = useState(null), [loading, setLoading] = useState(true), [error, setError] = useState(null);
+      const go = useCallback(async () => {
+        try { const r = await fetch(url); if (!r.ok) throw new Error(r.status); setData(await r.json()); setError(null); }
+        catch (e) { setError(e.message); } finally { setLoading(false); }
+      }, [url]);
+      useEffect(() => { go(); const t = setInterval(go, ms); return () => clearInterval(t); }, [go, ms]);
+      return { data, loading, error };
+    }
+
+    /* Donut */
+    function Donut({ score, size = 154 }) {
+      const r = (size - 14) / 2, circ = 2 * Math.PI * r, dash = (score / 100) * circ;
+      const c = score >= 90 ? '#00c566' : score >= 50 ? '#f59e0b' : '#ef4444';
+      return (
+        <div style={{ position: 'relative', width: size, height: size }}>
+          <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f3f4f6" strokeWidth={12} />
+            <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={c} strokeWidth={12}
+              strokeDasharray={circ} strokeDashoffset={circ - dash} strokeLinecap="round"
+              style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)', filter: `drop-shadow(0 0 8px ${c}88)` }} />
+          </svg>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: "'Syne',sans-serif", fontSize: '2.3rem', fontWeight: 800, color: '#111827', lineHeight: 1 }}>{Math.round(score)}</span>
+            <span style={{ fontSize: '.65rem', color: '#9ca3af', fontWeight: 700, marginTop: 2 }}>/ 100</span>
+          </div>
+        </div>
+      );
+    }
+
+    /* Typewriter */
+    function TW({ text, speed = 22 }) {
+      const [s, setS] = useState(''); const [c, setC] = useState(true);
+      useEffect(() => { if (!text) return; setS(''); let i = 0; const t = setInterval(() => { if (i < text.length) setS(text.slice(0, ++i)); else clearInterval(t) }, speed); return () => clearInterval(t); }, [text, speed]);
+      useEffect(() => { const t = setInterval(() => setC(x => !x), 500); return () => clearInterval(t); }, []);
+      return <>{s}<span className="tcursor" style={{ background: c ? '#00c566' : 'transparent' }} /></>;
+    }
+
+    const ST = {
+      Running: { c: '#16a34a', bg: '#dcfce7', bc: '#86efac', t: '● Running' },
+      Pending: { c: '#92400e', bg: '#fef9c3', bc: '#fde047', t: '◐ Pending' },
+      Failed: { c: '#dc2626', bg: '#fee2e2', bc: '#fca5a5', t: '✕ Failed' },
+    };
+    const NC = ['#059669', '#0ea5e9', '#f59e0b', '#7c3aed', '#dc2626', '#ea580c'];
+    const nsC = s => { let h = 0; for (const c of s) h = c.charCodeAt(0) + ((h << 5) - h); return NC[Math.abs(h) % NC.length]; };
+    const SK = ({ h = 13, w = '100%', s = {} }) => <div className="sk" style={{ height: h, width: w, borderRadius: 8, ...s }} />;
+
+    function Nav({ live }) {
+      return (
+        <nav className="nav">
+          <div className="logo"><div className="logo-mark">⚙️</div>OpsAgent</div>
+          <div className="live-chip"><span className="live-dot" />{live ? 'Live' : 'Offline'}</div>
+        </nav>
+      );
+    }
+
+    function Hero({ cluster, loading }) {
+      return (
+        <section className="hero">
+          <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 700, margin: '0 auto' }}>
+            <div className="eyebrow"><span className="edot" /> AI-Powered Kubernetes Monitoring</div>
+            <h1 className="hero-h">
+              Your Cluster.<br />
+              <span className="u-green">Always</span>{' '}
+              <span className="u-black">Healthy.</span>
+            </h1>
+            <p className="hero-sub">Real-time intelligence for your Kubernetes workloads — detect, analyze, and heal automatically. 🚀</p>
+            <div className="stat-row">
+              {loading ? [0, 1, 2].map(i => (
+                <div key={i} className="stat-card">
+                  <SK h={9} w="55%" s={{ marginBottom: 12 }} />
+                  <SK h={46} w="44%" s={{ marginBottom: 8 }} />
+                  <SK h={9} w="66%" />
+                </div>
+              )) : <>
+                <div className="stat-card">
+                  <div className="stat-accent" style={{ background: 'linear-gradient(90deg,#00bfa5,#00c566)' }} />
+                  <div className="stat-lbl">Total Pods</div>
+                  <div className="stat-num" style={{ color: '#111827' }}>{cluster?.total_pods ?? '--'}</div>
+                  <div className="stat-sub" style={{ color: '#9ca3af' }}>namespaces</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-accent" style={{ background: 'linear-gradient(90deg,#00c566,#22c55e)' }} />
+                  <div className="stat-lbl">Running</div>
+                  <div className="stat-num" style={{ color: '#16a34a' }}>{cluster?.running ?? '--'}</div>
+                  <div className="stat-sub" style={{ color: '#16a34a' }}>● Healthy</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-accent" style={{ background: (cluster?.failed ?? 0) > 0 ? 'linear-gradient(90deg,#ef4444,#f97316)' : '#f3f4f6' }} />
+                  <div className="stat-lbl">Failed</div>
+                  <div className="stat-num" style={{ color: (cluster?.failed ?? 0) > 0 ? '#dc2626' : '#d1d5db' }}>{cluster?.failed ?? '--'}</div>
+                  <div className="stat-sub" style={{ color: (cluster?.failed ?? 0) > 0 ? '#dc2626' : '#d1d5db' }}>
+                    {(cluster?.failed ?? 0) > 0 ? '⚠ Heal needed' : '✓ None'}
+                  </div>
+                </div>
+              </>}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function HealthCard({ analyze, loading }) {
+      const sc = analyze?.health_score ?? 0;
+      const tag = sc >= 90 ? 'All systems vibing 🚀' : sc >= 50 ? 'Some turbulence 🌤' : 'Needs attention ❤️‍🩹';
+      return (
+        <section className="section">
+          <div className="section-inner">
+            <div className="hcard">
+              <div className="donut-wrap">
+                {loading ? <div className="sk" style={{ width: 154, height: 154, borderRadius: '50%' }} />
+                  : <><Donut score={sc} /><div className="donut-lbl">{tag}</div></>}
+              </div>
+              <div className="hcard-info">
+                <div className="hcard-title">Cluster Health Score</div>
+                <div className="hcard-desc">Real-time Kubernetes cluster vitality index</div>
+                {loading
+                  ? <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>{[0, 1, 2].map(i => <SK key={i} h={68} />)}</div>
+                  : <div className="mini-grid">
+                    {[{ l: 'Running', v: analyze?.running, c: '#16a34a', bg: '#f0fdf4' }, { l: 'Failed', v: analyze?.failed, c: '#dc2626', bg: '#fef2f2' }, { l: 'Pending', v: analyze?.pending ?? 0, c: '#d97706', bg: '#fffbeb' }].map(({ l, v, c, bg }) => (
+                      <div key={l} className="mini-cell" style={{ background: bg, border: `1.5px solid ${c}33` }}>
+                        <div className="mini-lbl">{l}</div>
+                        <div className="mini-num" style={{ color: c }}>{v ?? '--'}</div>
+                      </div>
+                    ))}
+                  </div>
+                }
+                {!loading && analyze?.needs_attention && <div className="warn">⚠ Use Auto Heal to fix failing pods</div>}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function PodGrid({ pods, loading }) {
+      return (
+        <section className="section">
+          <div className="section-inner">
+            <div className="section-head">
+              <h2 className="section-title">Pod Fleet</h2>
+              <span className="pill-count">{loading ? '…' : pods?.length ?? 0} pods</span>
+              <span style={{ fontSize: '1.2rem' }}>🛸</span>
+            </div>
+            <div className="pod-grid">
+              {loading ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="pod-card"><SK h={13} w="70%" s={{ marginBottom: 10 }} /><SK h={20} w="38%" s={{ marginBottom: 13, borderRadius: 999 }} /><SK h={11} /></div>
+              )) : pods?.map(pod => {
+                const st = ST[pod.status] ?? { c: '#6b7280', bg: '#f9fafb', bc: '#d1d5db', t: pod.status };
+                const nc = nsC(pod.namespace);
+                const nsBg = nc + '18';
+                return (
+                  <div key={pod.name} className="pod-card">
+                    <div className="pod-top">
+                      <div className="pod-name">{pod.name}</div>
+                      <span className="status-pill" style={{ background: st.bg, color: st.c, borderColor: st.bc }}>{st.t}</span>
+                    </div>
+                    <span className="ns-tag" style={{ background: nsBg, color: nc, borderColor: nc + '44' }}>{pod.namespace}</span>
+                    <div className="pod-foot">
+                      <span className="pod-foot-lbl">Restarts</span>
+                      <span className="pod-foot-val" style={{ color: pod.restarts > 5 ? '#dc2626' : pod.restarts > 0 ? '#d97706' : '#16a34a' }}>{pod.restarts}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function AISection({ alerts, loading }) {
+      const list = alerts?.alerts ?? [];
+      const recs = alerts?.recommendations ?? [];
+      const AC = [{ c: '#dc2626', bg: '#fee2e2' }, { c: '#d97706', bg: '#fef9c3' }, { c: '#0ea5e9', bg: '#e0f2fe' }, { c: '#7c3aed', bg: '#f5f3ff' }, { c: '#ea580c', bg: '#fff7ed' }];
+      const txt = list.length > 0 ? `Detected ${list.length} alert(s). ${recs.length} recommendation(s) available.` : 'All systems nominal. No anomalies detected. Cluster running optimally. 🎉';
+      return (
+        <section className="section">
+          <div className="section-inner">
+            <div className="section-head">
+              <h2 className="section-title">AI Analysis</h2>
+              <span style={{ fontSize: '1.2rem' }}>🤖</span>
+            </div>
+            <div className="ai-card">
+              <div className="ai-head">
+                <div className="ai-icon">🧠</div>
+                <div>
+                  <div className="ai-name">OpsAgent Brain</div>
+                  <div className="ai-sub">AI-powered cluster intelligence</div>
+                </div>
+                <div className="ai-ts">{alerts?.timestamp ? new Date(alerts.timestamp).toLocaleTimeString() : '--:--'}</div>
+              </div>
+              <div className="terminal">
+                {loading ? <><SK h={11} s={{ marginBottom: 8 }} /><SK h={11} w="68%" /></> : <TW text={txt} />}
+              </div>
+              {!loading && list.length > 0 && <>
+                <div className="sub-lbl">Active Alerts</div>
+                <div className="tags" style={{ marginBottom: 16 }}>
+                  {list.map((a, i) => { const { c, bg } = AC[i % AC.length]; return <span key={i} className="tag" style={{ background: bg, color: c, borderColor: c + '44' }}>⚑ {a}</span>; })}
+                </div>
+              </>}
+              {!loading && recs.length > 0 && <>
+                <div className="sub-lbl" style={{ marginTop: 6 }}>Recommendations</div>
+                <ul className="recs">{recs.map((r, i) => <li key={i}>{r}</li>)}</ul>
+              </>}
+              {!loading && list.length === 0 && <div className="tags">
+                {['Healthy', 'Stable', 'No Alerts', 'All Running'].map((t, i) => <span key={i} className="tag" style={{ background: '#f0fdf4', color: '#16a34a', borderColor: '#86efac' }}>✓ {t}</span>)}
+              </div>}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Toast({ msg, type, onClose }) {
+      useEffect(() => { const t = setTimeout(onClose, 3200); return () => clearTimeout(t); }, [onClose]);
+      const ok = type === 'success';
+      return (
+        <div className="toast" style={{ border: `1.5px solid ${ok ? '#86efac' : '#fca5a5'}` }}>
+          <div className="toast-icon" style={{ background: ok ? '#f0fdf4' : '#fee2e2', color: ok ? '#16a34a' : '#dc2626' }}>{ok ? '✓' : '✕'}</div>
+          <span className="toast-msg">{msg}</span>
+          <span className="tx" onClick={onClose}>×</span>
+        </div>
+      );
+    }
+
+    function App() {
+      const [toast, setToast] = useState(null), [healing, setHealing] = useState(false);
+      const { data: cluster, loading: cl, error: ce } = useFetch(`${API}/cluster/status`);
+      const { data: analyze, loading: al } = useFetch(`${API}/analyze/quick`);
+      const { data: alerts, loading: ll } = useFetch(`${API}/alerts/`);
+
+      async function heal() {
+        if (healing) return;
+        setHealing(true);
+        try { const r = await fetch(`${API}/alerts/heal`, { method: 'POST' }); const j = await r.json(); setToast({ msg: j.message ?? 'Cluster healed! 🎉', type: 'success' }); }
+        catch (e) { setToast({ msg: `Heal failed: ${e.message}`, type: 'error' }); }
+        finally { setHealing(false); }
+      }
+
+      return (
+        <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+          <Nav live={!ce} />
+          <Hero cluster={cluster} loading={cl || al} />
+          <HealthCard analyze={analyze} loading={al} />
+          <PodGrid pods={cluster?.pods} loading={cl} />
+          <AISection alerts={alerts} loading={ll} />
+          <div className="heal-area">
+            <button className="heal-btn" onClick={heal} disabled={healing}>
+              {healing ? <>⚙️ Healing...</> : <>⚡ Auto Heal Cluster</>}
+            </button>
+          </div>
+          <div className="footer">OpsAgent v1.0 · Auto-refreshes every 30s · Made with 💚</div>
+          {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+
+</html>
