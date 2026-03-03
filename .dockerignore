@@ -1,0 +1,11 @@
+venv/
+node_modules/
+__pycache__/
+*.pyc
+.git/
+.github/
+.vscode/
+.env
+opsagent.log
+frontend/dist/
+frontend/node_modules/
