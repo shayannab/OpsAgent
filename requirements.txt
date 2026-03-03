@@ -1,4 +1,11 @@
 fastapi
 uvicorn
 aiofiles
+httpx
+textual
+rich
+kubernetes
+groq
+pydantic
+python-dotenv
 

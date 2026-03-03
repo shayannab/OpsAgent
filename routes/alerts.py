@@ -1,12 +1,11 @@
 from fastapi import APIRouter
 from services.kubernetes import get_cluster_status, restart_pod, get_failed_pods
 from services.ai import explain_healing, analyze_cluster
+from services.history import add_to_history, get_history
 from models.schemas import HealingAction
 from datetime import datetime
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
-
-healing_history = []
 
 @router.get("/")
 def get_alerts():
@@ -41,9 +40,9 @@ def heal_cluster():
             success=success
         )
         actions.append(action)
-        healing_history.append(action)
+        add_to_history(action)
     return {"message": f"Healed {len(actions)} pods", "actions": actions}
 
 @router.get("/healing-history")
 def get_healing_history():
-    return {"history": healing_history}
+    return {"history": get_history()}

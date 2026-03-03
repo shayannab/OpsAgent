@@ -1,0 +1,39 @@
+# OpsAgent: AI-Powered Kubernetes SRE
+
+**OpsAgent** is an intelligent monitoring and automated healing platform for Kubernetes clusters. It combines traditional cluster observability with Large Language Models (LLMs) to provide "Self-Healing" capabilities for modern infrastructure.
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User([User])
+    TUI[Terminal UI - Textual]
+    Web[Web Dashboard - React]
+    API[FastAPI Backend]
+    K8s[(Kubernetes Cluster)]
+    AI[Groq AI - Llama 3]
+
+    User <--> TUI
+    User <--> Web
+    TUI <--> API
+    Web <--> API
+    API <--> K8s
+    API <--> AI
+```
+
+## 🚀 Key Features
+
+*   **Real-time Intelligence**: Automatically diagnosticates crashing pods using AI summaries instead of just error codes.
+*   **Dual Interfaces**: Switch between a terminal-optimized experience (TUI) and a premium web dashboard.
+*   **One-Click Healing**: The "Auto Heal" feature triggers AI-assisted recovery actions (like smart restarts or resource adjustments).
+*   **Visual Health Index**: A "Cluster Health Score" that gives an at-a-glance view of your infrastructure's vitality.
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Backend** | FastAPI, Pydantic, Kubernetes Python Client |
+| **AI Layer** | Groq SDK (Llama 3.3 70B) |
+| **Web Frontend** | React 18, Vite, Tailwind CSS (V2.1 Premium) |
+| **Terminal UI** | Textual, Rich, HTTPX |
+| **Deployment** | Docker, Kubernetes Manifests |

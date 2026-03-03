@@ -3,9 +3,24 @@ import os
 from models.schemas import ClusterStatus, AnalysisResult, HealingAction
 from datetime import datetime
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+client = None
+api_key = os.environ.get("GROQ_API_KEY")
+if api_key:
+    client = Groq(api_key=api_key)
+
+def get_mock_analysis(status: ClusterStatus) -> AnalysisResult:
+    return AnalysisResult(
+        timestamp=datetime.now(),
+        cluster_status=status,
+        analysis="[MOCK MODE] Cluster appears to be running normally with some minor pod rotations. AI analysis is currently simulated.",
+        alerts=["High Pod Count" if status.total_pods > 10 else "All Clear"],
+        recommendations=["Check pod resource limits", "Ensure adequate node capacity"]
+    )
 
 def analyze_cluster(status: ClusterStatus) -> AnalysisResult:
+    if not client:
+        return get_mock_analysis(status)
+    
     pod_summary = "\n".join([
         f"- {p.name} in {p.namespace}: {p.status} (restarts: {p.restarts})"
         for p in status.pods
@@ -60,6 +75,9 @@ RECOMMENDATIONS: <comma separated list of recommendations, or 'none'>
     )
 
 def explain_healing(pod_name: str, reason: str) -> str:
+    if not client:
+        return f"Restarted pod {pod_name} to resolve internal state inconsistencies ({reason})."
+        
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[

@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react'
 
 export default function ActivityFeed() {
-    const [events, setEvents] = useState([
-        { id: 1, type: 'teal', text: 'Telemetry sync specialized' },
-        { id: 2, type: 'orange', text: 'Anomaly detected in node-04' },
-        { id: 3, type: 'indigo', text: 'Protocol-X initialized' }
-    ])
+    const [events, setEvents] = useState([])
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            const newEvent = {
-                id: Date.now(),
-                type: Math.random() > 0.7 ? 'orange' : 'teal',
-                text: Math.random() > 0.5 ? 'Node health synchronized' : 'Resource optimization complete',
-                isNew: true
+        const fetchHistory = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/alerts/healing-history')
+                const data = await response.json()
+                const formattedEvents = data.history.map(item => ({
+                    id: item.timestamp,
+                    type: item.success ? 'teal' : 'orange',
+                    text: `Healed: ${item.pod_name} (${item.action})`,
+                }))
+                setEvents(formattedEvents)
+            } catch (error) {
+                console.error("Failed to fetch history:", error)
             }
-            setEvents(prev => [newEvent, ...prev.slice(0, 4)])
-        }, 5000)
+        }
+
+        fetchHistory()
+        const interval = setInterval(fetchHistory, 5000)
         return () => clearInterval(interval)
     }, [])
 
