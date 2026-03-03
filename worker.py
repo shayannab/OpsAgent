@@ -16,7 +16,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger("OpsAgentWorker")
 
 async def monitoring_loop():
-    global AUTO_HEAL_ENABLED
     logger.info("🚀 OpsAgent Monitoring Worker started.")
     
     while True:
