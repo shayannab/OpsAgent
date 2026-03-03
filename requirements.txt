@@ -1,11 +1,15 @@
 fastapi
 uvicorn
 aiofiles
+pytest
+flake8
 httpx
-textual
-rich
+fastapi
+uvicorn
 kubernetes
 groq
-pydantic
 python-dotenv
+pydantic
+textual
+rich
 
