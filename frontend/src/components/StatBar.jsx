@@ -11,16 +11,10 @@ function AnimatedNumber({ value, suffix = "" }) {
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime
             const progress = Math.min(elapsed / duration, 1)
-
-            // Ease out cubic: 1 - pow(1 - x, 3)
             const easeProgress = 1 - Math.pow(1 - progress, 3)
-
             const nextValue = startValue + (value - startValue) * easeProgress
             setDisplayValue(nextValue)
-
-            if (progress < 1) {
-                requestAnimationFrame(animate)
-            }
+            if (progress < 1) requestAnimationFrame(animate)
         }
 
         requestAnimationFrame(animate)
@@ -31,31 +25,75 @@ function AnimatedNumber({ value, suffix = "" }) {
 }
 
 export default function StatBar({ clusterData, analyzeData, loading }) {
-    const formatValue = (val, isPercentage = false) => {
-        if (loading) return null
-        if (val === null || val === undefined || val === 0) return '—'
-        return isPercentage ? `${Math.round(val)}%` : val
-    }
-
     const stats = [
-        { label: 'Total Pods', value: clusterData?.total_pods, color: 'text-slate-900' },
-        { label: 'Running', value: clusterData?.running, color: 'text-[#00d9a3]' },
-        { label: 'Failed', value: clusterData?.failed, color: 'text-[#ff4d00]' },
-        { label: 'Health Score', value: analyzeData?.health_score, suffix: "%", color: 'text-[#6366f1]' },
+        {
+            label: 'Total Pods',
+            value: clusterData?.total_pods,
+            color: 'text-slate-800',
+            accent: '#6366f1',
+            glow: 'rgba(99,102,241,0.06)',
+        },
+        {
+            label: 'Running',
+            value: clusterData?.running,
+            color: 'text-[#00d9a3]',
+            accent: '#00d9a3',
+            glow: 'rgba(0,217,163,0.06)',
+        },
+        {
+            label: 'Failed',
+            value: clusterData?.failed,
+            color: 'text-[#ff4d00]',
+            accent: '#ff4d00',
+            glow: 'rgba(255,77,0,0.06)',
+        },
+        {
+            label: 'Health Score',
+            value: analyzeData?.health_score,
+            suffix: "%",
+            color: 'text-[#6366f1]',
+            accent: '#6366f1',
+            glow: 'rgba(99,102,241,0.06)',
+        },
     ]
 
     return (
-        <div className="w-full bg-white border-y border-[rgba(26,26,46,0.08)]">
-            <div className="max-w-7xl mx-auto flex divide-x divide-[rgba(26,26,46,0.08)]">
+        <div className="w-full bg-[#f0f0ff]">
+            <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 border-y border-slate-200">
                 {stats.map((stat, i) => (
-                    <div key={i} className="flex-1 px-8 py-10 group hover:bg-slate-50 transition-colors">
-                        <div className="font-mono text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2 group-hover:text-slate-500">
+                    <div
+                        key={i}
+                        className="relative flex flex-col px-10 py-10 group/stat
+                            border-r border-slate-200 last:border-r-0
+                            overflow-hidden cursor-default"
+                    >
+                        {/* Hover gradient glow */}
+                        <div
+                            className="absolute inset-0 opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 pointer-events-none"
+                            style={{
+                                background: `radial-gradient(ellipse at 20% 60%, ${stat.glow} 0%, transparent 70%)`,
+                            }}
+                        />
+
+                        {/* Left accent bar */}
+                        <div
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full
+                                h-8 group-hover/stat:h-14 transition-all duration-300 ease-out"
+                            style={{ background: stat.accent }}
+                        />
+
+                        {/* Label */}
+                        <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3 relative z-10
+                            group-hover/stat:translate-x-1 transition-transform duration-200">
                             {stat.label}
                         </div>
+
+                        {/* Value */}
                         {loading ? (
-                            <div className="skeleton h-12 w-24 mt-1" />
+                            <div className="skeleton h-14 w-20 mt-1 rounded-xl" />
                         ) : (
-                            <div className={`font-mono text-[48px] font-bold tracking-tighter ${stat.color} leading-none`}>
+                            <div className={`font-mono text-[52px] font-black tracking-tighter leading-none relative z-10
+                                group-hover/stat:translate-x-1 transition-transform duration-200 ${stat.color}`}>
                                 <AnimatedNumber value={stat.value ?? 0} suffix={stat.suffix} />
                             </div>
                         )}

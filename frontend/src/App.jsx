@@ -11,6 +11,7 @@ import SourceIllustrations from './components/SourceIllustrations'
 import { fetchClusterStatus, fetchAIAnalysis, fetchAlerts } from './hooks/useApi'
 
 import ActivityFeed from './components/ActivityFeed'
+import Footer from './components/Footer'
 
 function App() {
     const [clusterData, setClusterData] = useState(null)
@@ -64,7 +65,7 @@ function App() {
     }
 
     return (
-        <div className="min-h-screen relative font-sans text-slate-900 overflow-x-hidden pt-16">
+        <div className="min-h-screen relative font-sans text-slate-900 overflow-x-hidden">
             {/* Parallax Grid Background */}
             <div
                 className="fixed inset-0 z-0 pointer-events-none"
@@ -80,62 +81,62 @@ function App() {
             <Navbar isLive={!error} />
 
             <main className="relative z-10">
-                <HeroSection
-                    clusterData={clusterData}
-                    analyzeData={analyzeData}
-                    loading={loading}
-                />
+                <HeroSection />
 
-                <StatBar
-                    clusterData={clusterData}
-                    analyzeData={analyzeData}
-                    loading={loading}
-                />
 
-                <div className="space-y-0">
-                    <section className="bg-white py-20">
-                        <div className="max-w-7xl mx-auto px-8">
-                            <ClusterHealthCard analyzeData={analyzeData} loading={loading} />
-                        </div>
-                    </section>
 
-                    <section className="bg-transparent py-20">
-                        <div className="max-w-7xl mx-auto px-8">
-                            <PodGrid pods={clusterData?.pods || []} loading={loading} />
-                        </div>
-                    </section>
+                {/* ── Light content zone ── */}
+                <div className="relative bg-[#f0f0ff]">
+                    {/* Subtle dot-grid texture */}
+                    <div className="absolute inset-0 pointer-events-none"
+                        style={{
+                            backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.10) 1px, transparent 1px)',
+                            backgroundSize: '28px 28px',
+                        }}
+                    />
 
-                    <section className="bg-white py-20">
-                        <div className="max-w-7xl mx-auto px-8">
-                            <AIAnalysisSection alertsData={alertsData} loading={loading} />
-                        </div>
-                    </section>
+                    <div className="relative z-10 space-y-0">
+                        <StatBar
+                            clusterData={clusterData}
+                            analyzeData={analyzeData}
+                            loading={loading}
+                        />
 
-                    <section className="bg-transparent py-20">
-                        <div className="max-w-7xl mx-auto px-8 flex flex-col lg:flex-row gap-16">
-                            <div className="lg:w-1/3">
-                                <ActivityFeed />
+                        <section className="py-20">
+                            <div className="max-w-7xl mx-auto px-8">
+                                <ClusterHealthCard analyzeData={analyzeData} loading={loading} />
                             </div>
-                            <div className="lg:w-2/3 flex items-center justify-center">
-                                <HealButton onHealed={handleHealed} />
+                        </section>
+
+                        <section className="py-20">
+                            <div className="max-w-7xl mx-auto px-8">
+                                <PodGrid pods={clusterData?.pods || []} loading={loading} />
                             </div>
-                        </div>
-                    </section>
+                        </section>
+
+                        <section className="py-20">
+                            <div className="max-w-7xl mx-auto px-8">
+                                <AIAnalysisSection alertsData={alertsData} loading={loading} />
+                            </div>
+                        </section>
+
+                        <section className="py-20">
+                            <div className="max-w-7xl mx-auto px-8 flex flex-col lg:flex-row gap-16">
+                                <div className="lg:w-1/3">
+                                    <ActivityFeed />
+                                </div>
+                                <div className="lg:w-2/3 flex items-center justify-center">
+                                    <HealButton onHealed={handleHealed} />
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+
                 </div>
             </main>
 
-
-            <footer className="relative z-10 py-12 px-8 border-t border-[rgba(26,26,46,0.08)] bg-white/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">OpsAgent</span>
-                        <span className="font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-400">v2.1.0-PREMIUM</span>
-                    </div>
-                    <p className="text-slate-400 text-sm font-medium">
-                        Advanced Kubernetes Intelligence Engine
-                    </p>
-                </div>
-            </footer>
+            <Footer />
 
             {toast && (
                 <Toast
