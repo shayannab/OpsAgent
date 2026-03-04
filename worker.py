@@ -6,6 +6,8 @@ from services.slack import send_slack_alert, send_heal_notification
 from services.history import add_to_history
 from models.schemas import HealingAction
 from datetime import datetime
+from services.metrics import ALERTS_SENT, AI_ANALYSES, K8S_CONNECTION
+
 
 # Configuration
 POLL_INTERVAL = 60  # seconds
@@ -21,6 +23,9 @@ async def monitoring_loop():
     while True:
         try:
             status = get_cluster_status()
+            # Update connection metric
+            K8S_CONNECTION.set(1)
+            
             failed_pods = [p for p in status.pods if p.status == "Failed" or p.restarts > 5]
             
             # Reset alerts for pods that are now healthy
@@ -35,6 +40,11 @@ async def monitoring_loop():
                     
                     # Get AI Analysis for context
                     analysis = analyze_cluster(status)
+                    
+                    # Track metrics
+                    AI_ANALYSES.inc()
+                    ALERTS_SENT.labels(status=pod.status, namespace=pod.namespace).inc()
+                    
                     await send_slack_alert(
                         pod.name, 
                         pod.namespace, 
@@ -67,6 +77,8 @@ async def monitoring_loop():
                             logger.error(f"❌ Failed to heal {pod.name}")
 
         except Exception as e:
+            # Mark as disconnected in metrics
+            K8S_CONNECTION.set(0)
             logger.error(f"Worker Error: {e}")
             
         await asyncio.sleep(POLL_INTERVAL)

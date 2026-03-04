@@ -7,6 +7,9 @@ from services.ai import client as ai_client
 from kubernetes import client as k8s_client, config as k8s_config
 import platform
 import os
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from fastapi import Response
+
 
 app = FastAPI(
     title="OpsAgent API",
@@ -42,6 +45,10 @@ def get_settings():
         "auto_heal": worker.AUTO_HEAL_ENABLED,
         "poll_interval": worker.POLL_INTERVAL
     }
+@app.get("/metrics")
+def metrics():
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
 
 @app.post("/settings/toggle-heal")
 def toggle_heal():
