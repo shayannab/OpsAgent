@@ -57,9 +57,11 @@ async def monitoring_loop():
                     # Auto-Heal if enabled
                     if AUTO_HEAL_ENABLED:
                         logger.info(f"⚡ Auto-Healing {pod.name}...")
-                        reason = f"Status: {pod.status}, Restarts: {pod.restarts}"
+                        reason = (
+                            f"Status: {pod.status}, Restarts: {pod.restarts}"
+                        )
                         explanation = explain_healing(pod.name, reason)
-                        
+
                         success = restart_pod(pod.name, pod.namespace)
                         if success:
                             action = HealingAction(
@@ -80,8 +82,9 @@ async def monitoring_loop():
             # Mark as disconnected in metrics
             K8S_CONNECTION.set(0)
             logger.error(f"Worker Error: {e}")
-            
+
         await asyncio.sleep(POLL_INTERVAL)
+
 
 def start_worker():
     loop = asyncio.get_event_loop()
@@ -89,6 +92,7 @@ def start_worker():
         asyncio.create_task(monitoring_loop())
     else:
         asyncio.run(monitoring_loop())
+
 
 if __name__ == "__main__":
     asyncio.run(monitoring_loop())

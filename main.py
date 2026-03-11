@@ -9,6 +9,9 @@ import platform
 import os
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Response
+import asyncio
+from worker import monitoring_loop
+import worker  # For settings access
 
 
 app = FastAPI(
@@ -25,19 +28,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import asyncio
-from worker import monitoring_loop, AUTO_HEAL_ENABLED
-import worker # For settings access
-
 # Routes
 app.include_router(cluster.router)
 app.include_router(analyze.router)
 app.include_router(alerts.router)
 
+
 @app.on_event("startup")
 async def startup_event():
     # Start the monitoring loop in the background
     asyncio.create_task(monitoring_loop())
+
 
 @app.get("/settings")
 def get_settings():
@@ -45,6 +46,8 @@ def get_settings():
         "auto_heal": worker.AUTO_HEAL_ENABLED,
         "poll_interval": worker.POLL_INTERVAL
     }
+
+
 @app.get("/metrics")
 def metrics():
     return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)

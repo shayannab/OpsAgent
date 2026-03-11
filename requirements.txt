@@ -11,3 +11,4 @@ rich
 pytest
 flake8
 types-requests
+prometheus-client

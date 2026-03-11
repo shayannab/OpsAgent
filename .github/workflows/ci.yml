@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest httpx fastapi uvicorn kubernetes groq python-dotenv pydantic aiofiles types-requests
+        pip install flake8 pytest httpx fastapi uvicorn kubernetes groq python-dotenv pydantic aiofiles types-requests prometheus-client
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip list
 

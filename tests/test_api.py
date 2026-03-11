@@ -9,10 +9,12 @@ def test_read_health():
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
 
+
 def test_get_settings():
     response = client.get("/settings")
     assert response.status_code == 200
     assert "auto_heal" in response.json()
+
 
 def test_cluster_status_mock():
     # Even if K8s is disconnected, it should return mock data
