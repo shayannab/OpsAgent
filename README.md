@@ -2,28 +2,29 @@
 
 **AI-Powered Kubernetes Monitoring & Self-Healing**
 
-OpsAgent is a modern monitoring engine that uses AI to analyze cluster health, detect failures, and automatically heal pods. It bridges the gap between raw telemetry and actionable intelligence.
+OpsAgent is an intelligent, autonomous backend engine that watches your Kubernetes clusters, analyzes pod failures using Large Language Models, and executes self-healing actions. 
+
+> **Note:** The backend engine (API, AI capabilities, Monitoring Worker, and Slack Alerts) is **fully implemented and operational**. The frontend dashboard is currently a work in progress.
 
 ---
 
-## ✨ Features
+## ✨ Fully Implemented Features
 
-- **🤖 AI Diagnosis**: Analyzes pod failures using LLMs (Groq/Llama) to provide human-readable justifications for issues.
-- **⚡ Self-Healing**: Automated pod restarts and healing actions based on AI-driven decisions.
-- **📊 Real-time Dashboard**: A premium, atmospheric UI for monitoring cluster status at a glance.
-- **📈 Prometheus Integration**: Native `/metrics` endpoint for long-term trend analysis and Grafana dashboards.
-- **💬 Slack Notifications**: Instant, detailed alerts sent to your team for every critical event and healing action.
-- **🎡 Helm Ready**: Packaged for production-grade deployment on any Kubernetes cluster.
-- **🏗️ CI/CD Integrated**: GitHub Actions pipelines for automated testing and container image builds.
+- **✅ Native Kubernetes Integration**: Connects seamlessly using your local `~/.kube/config` or in-cluster ServiceAccounts to monitor pod health, deployments, and restarts across all namespaces. (Includes a Mock Mode for testing without a cluster).
+- **✅ AI-Driven RCA (Root Cause Analysis)**: Integrates with Groq (`llama-3.3-70b-versatile`) to provide plain-english, human-readable explanations of *why* pods are failing or restarting.
+- **✅ Autonomous Self-Healing**: A background worker loop continuously monitors the cluster. When pods fail or enter crash loops, OpsAgent can automatically restart them based on AI justifications (configurable via API).
+- **✅ Rich Slack Notifications**: Sends highly detailed, color-coded API-driven Slack alerts complete with pod metrics and AI analysis.
+- **✅ Prometheus Metrics**: Exposes a standard `/metrics` endpoint for seamless integration into your existing Grafana & Prometheus monitoring stacks.
 
 ---
 
 ## 🛠️ Architecture
 
 OpsAgent consists of three main components:
-1. **The API**: A FastAPI backend that serves as the brain, managing settings and cluster interaction.
-2. **The Worker**: A background monitoring loop that watches the cluster and triggers the AI analysis.
-3. **The Frontend**: A sleek, React-powered dashboard for real-time visualization.
+1. **The API (`main.py`)**: A lightning-fast FastAPI backend that serves as the control plane, exposing metrics, health checks, and configuration endpoints.
+2. **The Worker (`worker.py`)**: An asynchronous background loop that actively polls Kubernetes, triggers LLM analysis on failures, issues Slack alerts, and executes healing actions.
+3. **The AI Engine (`services/ai.py`)**: Bridges the raw K8s status data with prompt-engineered calls to Groq's low-latency inference endpoints.
+4. **The Frontend**: *Currently undergoing a UI revamp.*
 
 ---
 
@@ -36,18 +37,24 @@ OpsAgent consists of three main components:
 
 ### 2. Local Setup
 ```bash
-# Install dependencies
+# Clone the repository
+git clone https://github.com/yourusername/opsagent.git
+cd opsagent
+
+# Install Python dependencies
 pip install -r requirements.txt
 
-# Set environment variables
-export GROQ_API_KEY="your_key"
-export SLACK_WEBHOOK_URL="your_webhook"
+# Set required environment variables
+export GROQ_API_KEY="your_groq_api_key"
+export SLACK_WEBHOOK_URL="your_slack_webhook"
 
-# Start the agent
+# Start the API & Worker
 python main.py
 ```
+*Note: OpsAgent runs on port `8000` by default. You can access the API documentation at `http://localhost:8000/docs`.*
 
 ### 3. Deploy to Kubernetes (Helm)
+OpsAgent comes packaged and ready for production:
 ```bash
 helm install opsagent ./charts/opsagent \
   --set env.groqApiKey="your_key" \
@@ -56,11 +63,16 @@ helm install opsagent ./charts/opsagent \
 
 ---
 
-## 📊 Monitoring
-Metrics are available at `:8000/metrics`. Point your Prometheus instance here to start collecting data.
+## ⚙️ Configuration & API
+
+The API exposes several endpoints to control the agent:
+- `GET /health`: Detailed system health (Python version, K8s connectivity, AI status).
+- `GET /settings`: View current worker settings.
+- `POST /settings/toggle-heal`: Enable or disable the autonomous Self-Healing loop.
+- `GET /metrics`: Prometheus-compatible telemetry endpoint.
 
 ## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Whether it's adding a new AI provider, expanding the Kubernetes metrics we collect, or building out the UI, please feel free to submit a Pull Request.
 
 ---
 
