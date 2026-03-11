@@ -1,81 +1,136 @@
-# 🚀 OpsAgent
+# OpsAgent 🤖
 
-**AI-Powered Kubernetes Monitoring & Self-Healing**
+> AI-powered Kubernetes monitoring and auto-healing platform. OpsAgent watches your cluster, diagnoses issues using LLMs, and heals crashed pods automatically — with Slack alerts delivered in real time.
 
-OpsAgent is an intelligent, autonomous backend engine that watches your Kubernetes clusters, analyzes pod failures using Large Language Models, and executes self-healing actions. 
-
-> **Note:** The backend engine (API, AI capabilities, Monitoring Worker, and Slack Alerts) is **fully implemented and operational**. The frontend dashboard is currently a work in progress.
+**Live Demo → [opsagent-five.vercel.app](https://opsagent-five.vercel.app)**
 
 ---
 
-## ✨ Fully Implemented Features
+## What it does
 
-- **✅ Native Kubernetes Integration**: Connects seamlessly using your local `~/.kube/config` or in-cluster ServiceAccounts to monitor pod health, deployments, and restarts across all namespaces. (Includes a Mock Mode for testing without a cluster).
-- **✅ AI-Driven RCA (Root Cause Analysis)**: Integrates with Groq (`llama-3.3-70b-versatile`) to provide plain-english, human-readable explanations of *why* pods are failing or restarting.
-- **✅ Autonomous Self-Healing**: A background worker loop continuously monitors the cluster. When pods fail or enter crash loops, OpsAgent can automatically restart them based on AI justifications (configurable via API).
-- **✅ Rich Slack Notifications**: Sends highly detailed, color-coded API-driven Slack alerts complete with pod metrics and AI analysis.
-- **✅ Prometheus Metrics**: Exposes a standard `/metrics` endpoint for seamless integration into your existing Grafana & Prometheus monitoring stacks.
+OpsAgent continuously monitors your Kubernetes cluster and uses Groq's Llama 3 model to diagnose pod failures. When a pod crashes, OpsAgent restarts it automatically and sends a Slack notification — no manual intervention needed.
 
----
-
-## 🛠️ Architecture
-
-OpsAgent consists of three main components:
-1. **The API (`main.py`)**: A lightning-fast FastAPI backend that serves as the control plane, exposing metrics, health checks, and configuration endpoints.
-2. **The Worker (`worker.py`)**: An asynchronous background loop that actively polls Kubernetes, triggers LLM analysis on failures, issues Slack alerts, and executes healing actions.
-3. **The AI Engine (`services/ai.py`)**: Bridges the raw K8s status data with prompt-engineered calls to Groq's low-latency inference endpoints.
-4. **The Frontend**: *Currently undergoing a UI revamp.*
+- 🔍 **Real-time pod monitoring** via Kubernetes API
+- 🧠 **AI diagnostics** powered by Groq / Llama 3.3 70B
+- 🔧 **Auto-healing** — detects crashed pods and restarts them automatically
+- 💬 **Slack alerts** on every heal action
+- 📊 **React dashboard** with live event stream and cluster health overview
+- 🖥️ **Textual TUI** for terminal-based monitoring
 
 ---
 
-## 🚀 Quick Start
+## Tech Stack
 
-### 1. Prerequisites
-- A running Kubernetes cluster (or a valid `~/.kube/config`).
-- [Groq API Key](https://console.groq.com/) for AI insights.
-- [Slack Webhook URL](https://api.slack.com/messaging/webhooks) for notifications.
+| Layer | Tech |
+|---|---|
+| Backend | Python, FastAPI |
+| AI | Groq API (llama-3.3-70b-versatile) |
+| Kubernetes | minikube, kubectl, Python k8s client |
+| Frontend | React, Tailwind CSS, Framer Motion |
+| Notifications | Slack Webhooks |
+| Containerization | Docker |
 
-### 2. Local Setup
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- Docker Desktop
+- minikube
+- A Groq API key → [console.groq.com](https://console.groq.com)
+- A Slack Webhook URL → [Slack Incoming Webhooks](https://api.slack.com/messaging/webhooks)
+
+### 1. Clone the repo
+
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/opsagent.git
+git clone https://github.com/shayannab/opsagent.git
 cd opsagent
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Set required environment variables
-export GROQ_API_KEY="your_groq_api_key"
-export SLACK_WEBHOOK_URL="your_slack_webhook"
-
-# Start the API & Worker
-python main.py
 ```
-*Note: OpsAgent runs on port `8000` by default. You can access the API documentation at `http://localhost:8000/docs`.*
 
-### 3. Deploy to Kubernetes (Helm)
-OpsAgent comes packaged and ready for production:
+### 2. Set up environment variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+SLACK_WEBHOOK_URL=your_slack_webhook_url
+```
+
+### 3. Start minikube
+
 ```bash
-helm install opsagent ./charts/opsagent \
-  --set env.groqApiKey="your_key" \
-  --set env.slackWebhookUrl="your_webhook"
+minikube start
 ```
 
+### 4. Run the backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+### 5. Run the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs at `http://localhost:3000`
+
 ---
 
-## ⚙️ Configuration & API
+## How auto-healing works
 
-The API exposes several endpoints to control the agent:
-- `GET /health`: Detailed system health (Python version, K8s connectivity, AI status).
-- `GET /settings`: View current worker settings.
-- `POST /settings/toggle-heal`: Enable or disable the autonomous Self-Healing loop.
-- `GET /metrics`: Prometheus-compatible telemetry endpoint.
-
-## 🤝 Contributing
-Contributions are welcome! Whether it's adding a new AI provider, expanding the Kubernetes metrics we collect, or building out the UI, please feel free to submit a Pull Request.
+1. OpsAgent polls your minikube cluster every few seconds
+2. If a pod enters `CrashLoopBackOff` or `Failed` state, it's flagged
+3. Groq / Llama 3 diagnoses the failure and generates a summary
+4. OpsAgent restarts the pod via the Kubernetes API
+5. A Slack notification is sent with pod name, status, and AI diagnosis
 
 ---
 
-<p align="center">
-  Developed with ❤️ for the DevOps community.
-</p>
+## Slack Setup
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) and create an app
+2. Enable **Incoming Webhooks** and add it to your workspace
+3. Copy the webhook URL
+4. Paste it as `SLACK_WEBHOOK_URL` in your `.env` file
+
+---
+
+## Project Structure
+
+```
+opsagent/
+├── frontend/          # React App
+│   └── src/
+├── charts/            # Helm charts
+├── models/            # Data models
+├── routes/            # FastAPI route handlers
+├── services/          # Business logic & integrations
+├── tests/             # Test suite
+├── main.py            # FastAPI app entrypoint
+├── worker.py          # Background worker
+├── start.py           # Startup script
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+
+
+## Author
+
+Built by [Shayanna](https://github.com/shayannab) 
+
+---
+
+## License
+
+MIT
