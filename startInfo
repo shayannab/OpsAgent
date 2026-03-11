@@ -1,0 +1,6 @@
+three servers:
+1.backend: uvicorn main:app --reload --port 8000
+2.frontend: npm run dev
+3.tui: python start.py
+
+

@@ -9,7 +9,7 @@ function PodCard({ pod }) {
     const isFailed = pod.status === 'Failed'
 
     return (
-        <div className={`card p-6 relative group cursor-pointer hover:-translate-y-1 ${isFailed ? 'pulse-orange-border' : ''}`}>
+        <div className={`card-premium p-8 relative group cursor-pointer ${isFailed ? 'border-orange-500/20 bg-orange-50/10' : ''}`}>
             {/* Header: LED + Name */}
             <div className="flex items-center gap-3 mb-4">
                 <div className={`w-2.5 h-2.5 rounded-full ${status.pulseClass}`} style={{ background: status.color }} />

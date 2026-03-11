@@ -43,47 +43,54 @@ ANALYSIS: <2-3 sentence plain english summary>
 ALERTS: <comma separated list of alerts, or 'none'>
 RECOMMENDATIONS: <comma separated list of recommendations, or 'none'>
 """
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are an expert DevOps engineer. Be concise and practical."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        content = response.choices[0].message.content
+        
+        # Parse response
+        lines = content.strip().split("\n")
+        analysis = alerts = recommendations = ""
+        
+        for line in lines:
+            if line.startswith("ANALYSIS:"): analysis = line.replace("ANALYSIS:", "").strip()
+            elif line.startswith("ALERTS:"): alerts = line.replace("ALERTS:", "").strip()
+            elif line.startswith("RECOMMENDATIONS:"): recommendations = line.replace("RECOMMENDATIONS:", "").strip()
 
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "system", "content": "You are an expert DevOps engineer. Be concise and practical."},
-            {"role": "user", "content": prompt}
-        ]
-    )
+        alert_list = [] if alerts.lower() == "none" else [a.strip() for a in alerts.split(",")]
+        rec_list = [] if recommendations.lower() == "none" else [r.strip() for r in recommendations.split(",")]
 
-    content = response.choices[0].message.content
-    
-    # Parse response
-    lines = content.strip().split("\n")
-    analysis = alerts = recommendations = ""
-    
-    for line in lines:
-        if line.startswith("ANALYSIS:"): analysis = line.replace("ANALYSIS:", "").strip()
-        elif line.startswith("ALERTS:"): alerts = line.replace("ALERTS:", "").strip()
-        elif line.startswith("RECOMMENDATIONS:"): recommendations = line.replace("RECOMMENDATIONS:", "").strip()
-
-    alert_list = [] if alerts.lower() == "none" else [a.strip() for a in alerts.split(",")]
-    rec_list = [] if recommendations.lower() == "none" else [r.strip() for r in recommendations.split(",")]
-
-    return AnalysisResult(
-        timestamp=datetime.now(),
-        cluster_status=status,
-        analysis=analysis,
-        alerts=alert_list,
-        recommendations=rec_list
-    )
+        return AnalysisResult(
+            timestamp=datetime.now(),
+            cluster_status=status,
+            analysis=analysis,
+            alerts=alert_list,
+            recommendations=rec_list
+        )
+    except Exception as e:
+        print(f"AI Analysis Failed (Rate Limit or Connection Error): {e}")
+        return get_mock_analysis(status)
 
 def explain_healing(pod_name: str, reason: str) -> str:
     if not client:
         return f"Restarted pod {pod_name} to resolve internal state inconsistencies ({reason})."
         
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "system", "content": "You are a DevOps engineer. Explain in one sentence why you restarted a pod."},
-            {"role": "user", "content": f"Pod {pod_name} was restarted because: {reason}"}
-        ]
-    )
-    return response.choices[0].message.content
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are a DevOps engineer. Explain in one sentence why you restarted a pod."},
+                {"role": "user", "content": f"Pod {pod_name} was restarted because: {reason}"}
+            ]
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"AI Explain Failed (Rate Limit or Connection Error): {e}")
+        return f"Restarted pod {pod_name} to resolve internal state inconsistencies ({reason})."
+
 

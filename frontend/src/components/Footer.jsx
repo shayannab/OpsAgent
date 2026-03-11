@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
+
 const LINKS = {
-    Product: ['Cluster Monitor', 'AI Analysis', 'Alert Center', 'Healing Engine'],
-    Docs: ['Getting Started', 'API Reference', 'Helm Chart', 'CI/CD Integration'],
     Company: ['About', 'Blog', 'GitHub', 'Status'],
+    'Other Pages': ['Home', 'Dashboard', 'Pricing', 'Contact'],
 }
 
 export default function Footer() {
@@ -26,7 +27,7 @@ export default function Footer() {
                             <span className="text-white font-bold text-lg tracking-tighter">OpsAgent</span>
                         </div>
                         <p className="text-[13px] leading-relaxed text-slate-500 max-w-[200px]">
-                            AI-powered Kubernetes monitoring &amp; autonomous healing.
+                            AI-powered Kubernetes monitoring & autonomous healing.
                         </p>
                         {/* Status pill */}
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(0,217,163,0.2)] bg-[rgba(0,217,163,0.04)] w-fit">
@@ -41,18 +42,21 @@ export default function Footer() {
                             <h4 className="font-mono text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">
                                 {section}
                             </h4>
-                            <ul className="flex flex-col gap-3">
-                                {items.map((item) => (
-                                    <li key={item}>
-                                        <a
-                                            href="#"
-                                            className="text-[13px] text-slate-500 hover:text-white transition-colors duration-200"
-                                        >
-                                            {item}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
+                                <ul className="flex flex-col gap-3">
+                                    {items.map((item) => {
+                                        const path = item.toLowerCase().replace(/\s+/g, '-');
+                                        return (
+                                            <li key={item}>
+                                                <Link
+                                                    to={`/${path === 'home' ? '' : path}`}
+                                                    className="text-[13px] text-slate-500 hover:text-white transition-colors duration-200"
+                                                >
+                                                    {item}
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                         </div>
                     ))}
                 </div>
@@ -66,8 +70,8 @@ export default function Footer() {
                         <span className="font-mono text-[10px] bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 rounded text-slate-600">
                             v2.1.0-PREMIUM
                         </span>
-                        <span className="text-[12px] text-slate-600">Privacy</span>
-                        <span className="text-[12px] text-slate-600">Terms</span>
+                        <Link to="/privacy" className="text-[12px] text-slate-600 hover:text-white transition-colors duration-200">Privacy</Link>
+                        <Link to="/terms" className="text-[12px] text-slate-600 hover:text-white transition-colors duration-200">Terms</Link>
                     </div>
                 </div>
             </div>

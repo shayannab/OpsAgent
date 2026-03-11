@@ -58,8 +58,8 @@ export default function StatBar({ clusterData, analyzeData, loading }) {
     ]
 
     return (
-        <div className="w-full bg-[#f0f0ff]">
-            <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 border-y border-slate-200">
+        <div className="w-full bg-white relative">
+            <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 border-b border-slate-100">
                 {stats.map((stat, i) => (
                     <div
                         key={i}

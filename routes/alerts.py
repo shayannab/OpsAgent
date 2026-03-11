@@ -9,13 +9,17 @@ router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 @router.get("/")
 def get_alerts():
-    status = get_cluster_status()
-    result = analyze_cluster(status)
-    return {
-        "alerts": result.alerts,
-        "recommendations": result.recommendations,
-        "timestamp": result.timestamp
-    }
+    import traceback
+    try:
+        status = get_cluster_status()
+        result = analyze_cluster(status)
+        return {
+            "alerts": result.alerts,
+            "recommendations": result.recommendations,
+            "timestamp": result.timestamp
+        }
+    except Exception as e:
+        return {"error": str(e), "traceback": traceback.format_exc()}
 
 @router.get("/failed-pods")
 def failed_pods():

@@ -70,7 +70,7 @@ export default function ClusterHealthCard({ analyzeData, loading }) {
     const isHealthy = score >= 80
 
     return (
-        <div className="glass p-12 rounded-[40px] overflow-hidden relative border border-[rgba(26,26,46,0.06)] shadow-sm">
+        <div className="glass-light p-12 rounded-[40px] overflow-hidden relative border border-slate-100 shadow-xl shadow-indigo-500/5">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#6366f1] opacity-[0.03] rounded-full -mr-32 -mt-32 blur-[100px]" />
 

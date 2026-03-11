@@ -25,20 +25,20 @@ export default function ActivityFeed() {
     }, [])
 
     return (
-        <div className="flex flex-col gap-3">
-            <h3 className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Live Activity Feed</h3>
-            <div className="space-y-3">
+        <div className="flex flex-col gap-6">
+            <h3 className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2 leading-none">Cluster Chronology</h3>
+            <div className="space-y-4">
                 {events.map((event) => (
                     <div
                         key={event.id}
                         className={`
-                            flex items-center gap-4 p-4 rounded-xl border border-[rgba(26,26,46,0.06)] bg-white/50 backdrop-blur-sm
-                            transition-all duration-500 ease-premium
-                            ${event.isNew ? 'animate-slide-in-right flash-hint' : ''}
+                            flex items-center gap-6 p-6 rounded-3xl border border-slate-100 bg-white shadow-xl shadow-indigo-500/5
+                            transition-all duration-500 var(--ease-premium)
+                            ${event.isNew ? 'animate-slide-in-right' : ''}
                         `}
                     >
-                        <div className={`w-2 h-2 rounded-full ${event.type === 'teal' ? 'bg-[#00d9a3]' : 'bg-[#ff4d00]'}`} />
-                        <span className="text-[13px] font-medium text-slate-600">{event.text}</span>
+                        <div className={`w-3 h-3 rounded-full shadow-lg ${event.type === 'teal' ? 'bg-emerald-400 shadow-emerald-400/20' : 'bg-orange-400 shadow-orange-400/20'}`} />
+                        <span className="text-[14px] font-bold text-slate-700">{event.text}</span>
                     </div>
                 ))}
             </div>

@@ -69,11 +69,31 @@ export default function HeroSection() {
 
                 {/* Subtitle */}
                 <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
-                    className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light leading-relaxed tracking-wide">
+                    className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light leading-relaxed tracking-wide mb-12">
                     OpsAgent watches, diagnoses, and heals your infrastructure automatically.
                     High-precision AI intelligence for the modern cloud stack.
                 </motion.p>
+
+                {/* CTAs */}
+                <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-8">
+                    <Link
+                        to="/dashboard"
+                        className="group relative px-12 py-5 rounded-full bg-[#05050f] text-white border border-white/10 font-black text-xs uppercase tracking-[0.2em] overflow-hidden transition-all hover:scale-105 hover:border-indigo-500/50 hover:shadow-[0_0_30px_rgba(79,70,229,0.2)]"
+                    >
+                        <span className="relative z-10 transition-colors group-hover:text-indigo-300">Launch Dashboard</span>
+                        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+
+                    <button
+                        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                        className="text-white/30 hover:text-white font-bold text-xs uppercase tracking-[0.2em] transition-colors"
+                    >
+                        The Story ↓
+                    </button>
+                </motion.div>
             </div>
         </section>
     )
 }
+import { Link } from 'react-router-dom'
